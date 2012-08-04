@@ -1,0 +1,14 @@
+{% extends "form.html" %}
+
+{% block content %}
+<form method="POST" class="task-form">
+    <legend>Подтвердите завершение работы над задачей</legend>
+    <fieldset>
+        {% csrf_token %}
+        <div class="alert"><h3>{{ task }}</h3></div>
+        <input id="id_finished" type="hidden" name="finished" value="1">
+        <button class="btn btn-primary" type="submit">Подтверждаю, что задача выполнена</button>
+        <a class="btn" href="{% url todo-current %}">Отмена</a>
+    </fieldset>
+</form>
+{% endblock %}

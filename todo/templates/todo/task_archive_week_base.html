@@ -1,0 +1,65 @@
+{% extends "todo/page.html" %}
+
+{% block pageheader %}
+<div class="row">
+  <div class="pager">
+    <ul>
+        <li class="previous{% if not previous_week %} disabled{% endif %}">
+        <a href="{% if previous_week %}?year={{ previous_week.year }}&week={{ previous_week|date:"W" }}{% else %}#{% endif %}">
+            &larr; Предыдущая неделя
+        </a>
+        </li>
+        <li class="next{% if not next_week %} disabled{% endif %}">
+            <a href="{% if next_week %}?year={{ next_week.year }}&week={{ next_week|date:"W" }}{% else %}#{% endif %}">
+                Следующая неделя &rarr;
+            </a>
+        </li>
+    </ul>
+    {% if next_week and next_week.month != week.month %}
+        {% if next_week.year == week.year %}
+    <h3>{{ week|date:"F" }} - {{ next_week|date:"F Y" }}</h3>
+        {% else %}
+    <h3>{{ week|date:"F Y" }} - {{ next_week|date:"F Y" }}</h3>
+        {% endif %}
+    {% else %}
+    <h3>{{ week|date:"F Y" }}</h3>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block pagecontent %}
+<table class="task-table">
+    <tr>
+        {% for day, users in tasks %}
+        <th>
+            {% if users %}
+            <a href="{{ s }}{% url todo-day %}?year={{ day.year }}&month={{ day.month }}&day={{ day.day }}">
+                {{ day|date:"l, j" }}
+            </a>
+            {% else %}
+            {{ day|date:"l, j" }}
+            {% endif %}
+        </th>
+        {% endfor %}
+    </tr>
+    <tr>
+    {% for day, users in tasks %}
+    <td>
+        {% for user, user_tasks in users %}
+        <div class='alert'>
+            {% if s %}
+            <h3><a href="{{ user.get_absolute_url }}">{{ user }}</a></h3>
+            {% endif %}
+            <ul class="unstyled">
+            {% for task in user_tasks %}
+            <li>{{ task }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </td>
+    {% endfor %}
+    </tr>
+</table>
+{% endblock %}

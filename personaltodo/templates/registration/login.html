@@ -1,0 +1,15 @@
+{% extends "form.html" %}
+
+{% block content %}
+<form method="POST">
+    <legend>Авторизация</legend>
+    <fieldset>
+    {% csrf_token %}
+    {% include "bootstrap_form.html" %}
+    <em>Если у вас ещё нет аккаунта, то вы можете <a href="{% url registration_register %}">зарегистрироваться</a>.</em>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-large btn-primary">Войти</button>
+    </div>
+    </fieldset>
+</form>
+{% endblock %}

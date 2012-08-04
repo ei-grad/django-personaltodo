@@ -1,0 +1,14 @@
+{% extends "form.html" %}
+
+{% block content %}
+<form method="POST" class="form-horizontal">
+    <legend>Регистрация</legend>
+    <fieldset>
+    {% csrf_token %}
+    {% include "bootstrap_form.html" %}
+    <div class="form-actions">
+        <button type="submit" class="btn btn-large btn-primary">Зарегистрироваться</button>
+    </div>
+</fieldset>
+</form>
+{% endblock %}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>{{ title }}</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+        .sidebar-nav {
+          padding: 9px 0;
+        } 
+        .form-horizontal .control-label {
+          width: 200px;
+        }
+        .form-horizontal .controls {
+          margin-left: 220px;
+        }
+        .form-horizontal .form-actions {
+          padding-left: 220px;
+        }
+        .task {
+          background-color: #FCF8E3;
+          border: 1px solid #FBEED5;
+          border-radius: 4px 4px 4px 4px;
+          margin-bottom: 18px;
+        }
+        .task-form textarea {
+          width: 100%;
+          font-size: 24px;
+          line-height: 32px;
+        }
+        .task-form .btn {
+          font-size: 24px;
+          line-height: 32px;
+        }
+        .task-table {
+          width: 100%;
+        }
+        .task-table .alert {
+          margin-bottom: 2px;
+        }
+        .task-table td {
+          vertical-align: top;
+        }
+
+    </style>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico">
+
+    <link rel="apple-touch-icon-precomposed" sizes="144x144"
+        href="{{ STATIC_URL }}apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114"
+        href="{{ STATIC_URL }}apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72"
+        href="{{ STATIC_URL }}apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed"
+        href="{{ STATIC_URL }}apple-touch-icon-57-precomposed.png">
+
+  </head>
+
+  <body>
+
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+
+          <a class="brand" href="{% url home %}">Список задач</a>
+
+          <div class="nav-collapse">
+
+            {% if user.is_authenticated %}
+            <div class="pull-right">
+                <ul class="nav">
+              <form action="{% url search %}" method="POST" class="navbar-search">
+                {% csrf_token %}
+                <input type="text" class="span2 input-medium search-query" placeholder="Поиск">
+              </form>
+                  <li><a href="{{ user.get_absolute_url }}"><i class="icon-user icon-white"></i> {{ user }}</a></li>
+                  <li><a href="#">Настройки</a></li>
+                  <li class="divider"></li>
+                  <li><a href="{% url logout %}">Выйти</a></li>
+                </ul>
+            </div>
+            {% else %}
+            <div class="pull-right">
+            <ul class="nav">
+            <li><a href="{% url login %}">Войти</a></li>
+            </ul>
+            </div>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span2">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">Мои задачи</li>
+              <li{% block add_active %}{% endblock %}><a href="{% url todo-add %}">Создать задачу</a></li>
+              <li{% block current_active %}{% endblock %}><a href="{% url todo-current %}">Текущие</a></li>
+              <li{% block finished_active %}{% endblock %}><a href="{% url todo-finished %}">Закрытые</a></li>
+              <li{% block tasks_active %}{% endblock %}><a href="{% url todo-tasks %}">Полный список</a></li>
+              <li{% block day_active %}{% endblock %}><a href="{% url todo-day %}">На день</a></li>
+              <li{% block week_active %}{% endblock %}><a href="{% url todo-week %}">На неделю</a></li>
+              <li{% block month_active %}{% endblock %}><a href="{% url todo-month %}">На месяц</a></li>
+              {% if perms.todo.view_tasks %}
+              <li class="nav-header">Все задачи</li>
+              <li{% block s_current_active %}{% endblock %}><a href="{% url todo-s-current %}">Текущие</a></li>
+              <li{% block s_finished_active %}{% endblock %}><a href="{% url todo-s-finished %}">Закрытые</a></li>
+              <li{% block s_tasks_active %}{% endblock %}><a href="{% url todo-s-tasks %}">Полный список</a></li>
+              <li{% block s_day_active %}{% endblock %}><a href="{% url todo-s-day %}">На день</a></li>
+              <li{% block s_week_active %}{% endblock %}><a href="{% url todo-s-week %}">На неделю</a></li>
+              <li{% block s_month_active %}{% endblock %}><a href="{% url todo-s-month %}">На месяц</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+        <div class="span10">
+            {% block alerts %}
+            {% endblock %}
+            {% block content %}
+            {% endblock %}
+        </div>
+      </div>
+      
+      <hr/>
+
+      <footer>
+      &copy; <a href="mailto:andrew@ei-grad.ru">Andrew Grigorev</a> 2012.
+      Powered by
+      <a href="http://djangoproject.com">Django</a> and
+      <a href="http://twitter.github.com/bootstrap/">Bootstrap</a>.
+      </footer>
+
+    </div> <!-- /container -->
+
+    <script src="{{ STATIC_URL }}js/jquery.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+
+  </body>
+</html>

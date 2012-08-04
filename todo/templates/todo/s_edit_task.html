@@ -1,0 +1,13 @@
+{% extends "form.html" %}
+
+{% block content %}
+<form method="POST" class="task-form">
+    <legend>{% block legend %}Изменение задачи{% endblock %}</legend>
+    <fieldset>
+        {% csrf_token %}
+        <textarea name="task" placeholder="Описание задачи">{% if form.task.value %}{{ form.task.value }}{% endif %}</textarea>
+        <button class="btn btn-primary" type="submit">Изменить</button>
+        <button class="btn" type="submit">Завершить</button>
+    </fieldset>
+</form>
+{% endblock %}

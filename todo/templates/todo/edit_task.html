@@ -1,0 +1,16 @@
+{% extends "form.html" %}
+
+{% block content %}
+<form method="POST" class="task-form">
+    <legend>Изменение задачи</legend>
+    <fieldset>
+        {% csrf_token %}
+        <textarea name="task" placeholder="Описание задачи">{% if form.task.value %}{{ form.task.value }}{% endif %}</textarea>
+        <label class="checkbox">
+            <input id="id_finished" type="checkbox" name="finished"{% if form.finished.value %} checked{% endif %}>
+            Задача выполнена
+        </label>
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+    </fieldset>
+</form>
+{% endblock %}

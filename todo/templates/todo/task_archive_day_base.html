@@ -1,0 +1,12 @@
+{% extends "todo/page.html" %}
+
+{% block pageheader %}
+<div class="row">
+<div class="pager">
+    <ul>
+        <li class="previous{% if not previous_day %} disabled{% endif %}"><a href="{% if previous_day %}?year={{ previous_day.year }}&month={{ previous_day.month }}&day={{ previous_day.day}}{% else %}#{% endif %}">Предыдущий день</a></li>
+        <li class="next{% if not next_day %} disabled{% endif %}"><a href="{% if next_day %}?year={{ next_day.year }}&month={{ next_day.month }}&day={{ next_day.day }}{% else %}#{% endif %}">Следующий день</a></li>
+    </ul>
+</div>
+</div>
+{% endblock %}

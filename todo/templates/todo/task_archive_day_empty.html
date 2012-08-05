@@ -1,0 +1,13 @@
+{% extends "todo/task_archive_day_base.html" %}
+
+{% block pagecontent %}
+{% if day = today %}
+Задач ещё нет. <a href="{% url todo-add %}">Добавить задачу.</a>
+{% endif %}
+{% if day < today %}
+В этот день не было задач.
+{% endif %}
+{% if day > today %}
+На этот день не назначено ни одной задачи.
+{% endif %}
+{% endblock %}

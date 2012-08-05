@@ -4,15 +4,15 @@
 from datetime import date, timedelta
 
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.core.urlresolvers import reverse_lazy
 from django import forms
-from django.http import Http404, urlencode
+from django.http import Http404
 from django.views.generic import (DayArchiveView, WeekArchiveView,
                                   MonthArchiveView, ListView, CreateView,
                                   UpdateView)
 from django.views.generic.edit import FormView
 from django.views.generic.dates import _date_from_string, _get_next_prev_month
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 
 from models import Task
@@ -35,7 +35,7 @@ class LoginRequiredMixin(object):
         return login_required(super(LoginRequiredMixin, cls).as_view())
 
 
-class UserTasksQuerysetMixin(object):
+class UserTasksQuerysetMixin(LoginRequiredMixin):
     def get_queryset(self):
         return self.request.user.tasks.all()
 
@@ -73,12 +73,27 @@ class BaseTasksArchiveMixin(object):
             return date.today().strftime(self.week_format)
 
 
-class DayTasksArchiveMixin(object):
+class DayTasksArchiveMixin(BaseTasksArchiveMixin):
     def get(self, request, *args, **kwargs):
         try:
             return super(DayTasksArchiveMixin, self).get(request, *args, **kwargs)
         except Http404:
-            return redirect(request.user.tasks.all()[0])
+            day= date(int(self.get_year()), int(self.get_month()),
+                      int(self.get_day()))
+            return render(request, 'todo/task_archive_day_empty.html', {
+                'today': date.today(),
+                'day': day,
+                'previous_day': self.get_previous_day(day),
+                'next_day': self.get_next_day(day),
+            })
+
+    def get_context_data(self, **kwargs):
+        kwargs = super(DayTasksArchiveMixin, self).get_context_data(**kwargs)
+        users= {}
+        for task in kwargs['object_list']:
+            users.setdefault(task.user, []).append(task)
+        kwargs['tasks'] = sorted(users.items(), key=lambda x: x[0].username)
+        return kwargs
 
 
 class WeekTasksArchiveMixin(BaseTasksArchiveMixin):
@@ -86,12 +101,8 @@ class WeekTasksArchiveMixin(BaseTasksArchiveMixin):
         try:
             return super(WeekTasksArchiveMixin, self).get(request, *args, **kwargs)
         except Http404:
-            date = request.user.tasks.all()[0].date
-            return redirect('?'.join([
-                reverse('todo-week'),
-                urlencode({'year': date.year,
-                           'week': date.strftime(self.week_format)})
-            ]))
+            return render(request, 'todo/task_archive_week_empty.html',
+                          self.get_context_data(object_list=[]))
 
     def get_next_week(self, date):
         res = _get_next_prev_month(
@@ -111,8 +122,7 @@ class WeekTasksArchiveMixin(BaseTasksArchiveMixin):
             return None
         return res - timedelta(days=res.weekday())
 
-    def get_context_data(self, **kwargs):
-        kwargs = super(WeekTasksArchiveMixin, self).get_context_data(**kwargs)
+    def __get_date(self):
         year = self.get_year()
         week = self.get_week()
         week_format = self.get_week_format()
@@ -120,14 +130,17 @@ class WeekTasksArchiveMixin(BaseTasksArchiveMixin):
             '%W': '1',
             '%U': '0',
         }[week_format]
-        date = _date_from_string(year, self.get_year_format(), week_start, '%w',
+        return _date_from_string(year, self.get_year_format(), week_start, '%w',
                                  week, week_format)
+
+    def get_context_data(self, **kwargs):
+        kwargs = super(WeekTasksArchiveMixin, self).get_context_data(**kwargs)
+        date = self.__get_date()
         kwargs['previous_week'] = self.get_previous_week(date)
         kwargs['next_week'] = self.get_next_week(date)
         # initialize 5 work days for a week
         day_user_tasks = dict((date + timedelta(days=i), {})
-                              for i in range(1 - int(week_start),
-                                             1 - int(week_start) + 5))
+                              for i in range(5))
         for task in kwargs['object_list']:
             d = day_user_tasks.setdefault(task.date, {})
             d.setdefault(task.user, []).append(task)
@@ -185,13 +198,13 @@ class FinishTaskView(CurrentTasksMixin, UpdateView):
 #        fields = ('task', 'finished')
 #
 #
-#class EditTaskView(LoginRequiredMixin, UserTasksQuerysetMixin, UpdateView):
+#class EditTaskView(UserTasksQuerysetMixin, UpdateView):
 #    form_class = EditTaskForm
 #    template_name = 'todo/edit_task.html'
 #    success_url = reverse_lazy('todo-current')
 
 
-class TasksView(LoginRequiredMixin, UserTasksQuerysetMixin, ListView):
+class TasksView(UserTasksQuerysetMixin, ListView):
     model = Task
     template_name = 'todo/tasks.html'
 
@@ -210,17 +223,13 @@ class FinishedTasksView(LoginRequiredMixin, ListView):
         return self.request.user.tasks.filter(finished=True)
 
 
-class TasksArchiveMixin(LoginRequiredMixin, UserTasksQuerysetMixin,
-                        BaseTasksArchiveMixin):
+class DayView(UserTasksQuerysetMixin, DayTasksArchiveMixin, DayArchiveView):
     pass
 
-class DayView(TasksArchiveMixin, DayTasksArchiveMixin, DayArchiveView):
+class WeekView(UserTasksQuerysetMixin, WeekTasksArchiveMixin, WeekArchiveView):
     pass
 
-class WeekView(TasksArchiveMixin, WeekTasksArchiveMixin, WeekArchiveView):
-    pass
-
-class MonthView(TasksArchiveMixin, MonthArchiveView):
+class MonthView(UserTasksQuerysetMixin, BaseTasksArchiveMixin, MonthArchiveView):
     pass
 
 
@@ -270,7 +279,7 @@ class SFinishedTasksView(SMixin, ListView):
         return Task.objects.filter(finished=True)
 
 
-class SDayView(SMixin, BaseTasksArchiveMixin, DayArchiveView):
+class SDayView(SMixin, DayTasksArchiveMixin, DayArchiveView):
     template_name = 'todo/s_task_archive_day.html'
 
 

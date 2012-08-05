@@ -125,10 +125,10 @@
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               <li class="nav-header">Мои задачи</li>
-              <li{% block add_active %}{% endblock %}><a href="{% url todo-add %}">Создать задачу</a></li>
+              <li{% block add_active %}{% endblock %}><a href="{% url todo-add %}">Добавить задачу</a></li>
               <li{% block current_active %}{% endblock %}><a href="{% url todo-current %}">Текущие</a></li>
               <li{% block finished_active %}{% endblock %}><a href="{% url todo-finished %}">Закрытые</a></li>
-              <li{% block tasks_active %}{% endblock %}><a href="{% url todo-tasks %}">Полный список</a></li>
+              <li{% block tasks_active %}{% endblock %}><a href="{% url todo-tasks %}">Все задачи</a></li>
               <li{% block day_active %}{% endblock %}><a href="{% url todo-day %}">На день</a></li>
               <li{% block week_active %}{% endblock %}><a href="{% url todo-week %}">На неделю</a></li>
               <li{% block month_active %}{% endblock %}><a href="{% url todo-month %}">На месяц</a></li>
@@ -136,7 +136,7 @@
               <li class="nav-header">Все задачи</li>
               <li{% block s_current_active %}{% endblock %}><a href="{% url todo-s-current %}">Текущие</a></li>
               <li{% block s_finished_active %}{% endblock %}><a href="{% url todo-s-finished %}">Закрытые</a></li>
-              <li{% block s_tasks_active %}{% endblock %}><a href="{% url todo-s-tasks %}">Полный список</a></li>
+              <li{% block s_tasks_active %}{% endblock %}><a href="{% url todo-s-tasks %}">Все задачи</a></li>
               <li{% block s_day_active %}{% endblock %}><a href="{% url todo-s-day %}">На день</a></li>
               <li{% block s_week_active %}{% endblock %}><a href="{% url todo-s-week %}">На неделю</a></li>
               <li{% block s_month_active %}{% endblock %}><a href="{% url todo-s-month %}">На месяц</a></li>

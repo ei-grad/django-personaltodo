@@ -1,12 +1,36 @@
 {% extends "todo/page.html" %}
 
+{% block s_day_active %}{% if s %} class="active"{% endif %}{% endblock %}
+{% block day_active %}{% if not s %} class="active"{% endif %}{% endblock %}
+
 {% block pageheader %}
 <div class="row">
 <div class="pager">
     <ul>
-        <li class="previous{% if not previous_day %} disabled{% endif %}"><a href="{% if previous_day %}?year={{ previous_day.year }}&month={{ previous_day.month }}&day={{ previous_day.day}}{% else %}#{% endif %}">Предыдущий день</a></li>
-        <li class="next{% if not next_day %} disabled{% endif %}"><a href="{% if next_day %}?year={{ next_day.year }}&month={{ next_day.month }}&day={{ next_day.day }}{% else %}#{% endif %}">Следующий день</a></li>
+        {% if previous_day %}
+        <li class="previous"><a href="?year={{ previous_day.year }}&month={{ previous_day.month }}&day={{ previous_day.day }}">&larr; {{ previous_day }}</a></li>
+        {% else %}
+        <li class="previous disabled"><a href="#">&larr;</a></li>
+        {% endif %}
+
+        {% if next_day %}
+        <li class="next"><a href="?year={{ next_day.year }}&month={{ next_day.month }}&day={{ next_day.day }}">{{ next_day }} &rarr;</a></li>
+        {% else %}
+        <li class="next disabled"><a href="#">{{ next_day }} &rarr;</a></li>
+        {% endif %}
     </ul>
+    <h3>{{ day }}</h3>
 </div>
 </div>
+{% endblock %}
+
+{% block pagecontent %}
+{% for user, user_tasks in tasks %}
+    {% if s %}
+    <h3><a href="{{ user.get_absolute_url }}">{{ user }}</a></h3>
+    {% endif %}
+    {% for task in user_tasks %}
+    {% include "todo/task_div.html" %}
+    {% endfor %}
+{% endfor %}
 {% endblock %}

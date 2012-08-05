@@ -1,8 +1,9 @@
 {% extends "form.html" %}
 
+{% block add_active %} class="active"{% endblock %}
+
 {% block content %}
 <form method="POST" class="task-form">
-    <legend>Новая задача</legend>
     <fieldset>
         {% csrf_token %}
         <textarea name="task" placeholder="Описание задачи">{% if form.task.value %}{{ form.task.value }}{% endif %}</textarea>

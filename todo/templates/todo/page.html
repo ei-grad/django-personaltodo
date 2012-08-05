@@ -7,9 +7,13 @@
 {% endblock %}
 
 {% block pagecontent %}
+{% if tasks %}
 {% for task in tasks %}
 {% include "todo/task_div.html" %}
 {% endfor %}
+{% else %}
+Нет задач.
+{% endif %}
 {% endblock %}
 
 {% block pagefooter %}

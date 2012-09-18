@@ -26,11 +26,11 @@
 
 {% block pagecontent %}
 {% for user, user_tasks in tasks %}
-    {% if s %}
-    <h3><a href="{{ user.get_absolute_url }}">{{ user }}</a></h3>
-    {% endif %}
+    <div class="user-tasks">
+    <h3><a href="{{ user.get_absolute_url }}">{{ user.get_full_name }}</a></h3>
     {% for task in user_tasks %}
     {% include "todo/task_div.html" %}
     {% endfor %}
+    </div>
 {% endfor %}
 {% endblock %}

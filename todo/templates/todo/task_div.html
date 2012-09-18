@@ -1,6 +1,13 @@
-<div class='alert alert-info'>
-    {% if not task.finished and task.user == request.user %}
-    <a class="close" href="{% url todo-finish task.id %}">×</a>
-    {% endif %}
-    <h3><a href="{{ s }}{{ task.get_absolute_url }}">{{ task }}</a></h3>
+{% if task.finished %}
+<div class="alert alert-success">
+    <h3>✔ {{ task }}</h3>
 </div>
+{% else %}
+<div class="alert">
+    {% if task.user == request.user %}
+    <h3><a href="{% url todo-finish task.id %}">{{ task }}</a></h3>
+    {% else %}
+    <h3>{{ task }}</h3>
+    {% endif %}
+</div>
+{% endif %}

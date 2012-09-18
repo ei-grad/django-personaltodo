@@ -26,8 +26,6 @@ class Task(models.Model):
     class Meta:
         permissions = (
             ("view_tasks", u"Пользователь может видеть задачи других пользователей"),
-            ("edit_tasks", u"Пользователь может редактировать и переназначать "
-                           u"задачи других пользователей"),
         )
         ordering = ('finished', '-id')
 

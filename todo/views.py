@@ -238,7 +238,7 @@ class MonthView(UserTasksQuerysetMixin, BaseTasksArchiveMixin, MonthArchiveView)
 
 class SMixin(PermissionRequiredMixin):
     model = Task
-    permission_required = 'todo.view_task'
+    permission_required = 'todo.view_tasks'
     def get_context_data(self, **kwargs):
         kwargs['s'] = '/s'
         return super(SMixin, self).get_context_data(**kwargs)
